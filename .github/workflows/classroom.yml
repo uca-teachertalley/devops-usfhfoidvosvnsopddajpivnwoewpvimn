@@ -1,0 +1,78 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+    - name: Coding Style
+      id: coding-style
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Coding Style
+        setup-command: ''
+        command: "pylint calculations.py"
+        timeout: 10
+        max-score: 1
+    - name: test_add
+      id: test_add
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_add
+        setup-command: ''
+        command: "python -m unittest test_calculations.TestCalculations.test_add"
+        timeout: 10
+        max-score: 1
+    - name: test_subtract
+      id: test_subtract
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_subtract
+        setup-command: ''
+        command: "python -m unittest test_calculations.TestCalculations.test_subtract"
+        timeout: 10
+        max-score: 1
+    - name: test_divide
+      id: test_divide
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_divide
+        setup-command: ''
+        command: "python -m unittest test_calculations.TestCalculations.test_divide"
+        timeout: 10
+        max-score: 1
+    - name: test_divide_by_zero
+      id: test_divide_by_zero
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_divide_by_zero
+        setup-command: ''
+        command: "python -m unittest test_calculations.TestCalculations.test_divide_by_zero"
+        timeout: 10
+        max-score: 1
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        CODING-STYLE_RESULTS: "${{steps.coding-style.outputs.result}}"
+        TEST_ADD_RESULTS: "${{steps.test_add.outputs.result}}"
+        TEST_SUBTRACT_RESULTS: "${{steps.test_subtract.outputs.result}}"
+        TEST_DIVIDE_RESULTS: "${{steps.test_divide.outputs.result}}"
+        TEST_DIVIDE_BY_ZERO_RESULTS: "${{steps.test_divide_by_zero.outputs.result}}"
+      with:
+        runners: coding-style, test_add, test_subtract, test_divide, test_divide_by_zero
