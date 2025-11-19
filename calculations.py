@@ -1,5 +1,11 @@
+"""Author: Joshua Sano"""
 # calculations.py
 """A module for basic arithmetic calculations. An example of unit testing and automated testing"""
+
+def multiply(a, b):
+    """Returns the product of two numbers."""
+    return a * b
+
 def add(a, b):
     """Returns the sum of two numbers."""
     return a + b
